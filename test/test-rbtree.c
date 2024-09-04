@@ -4,17 +4,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 // new_rbtree should return rbtree struct with null root node
 void test_init(void) {
-  rbtree *t = new_rbtree();
+  rbtree *t = new_rbtree(); 
+  // 새로운 rb트리 생성, 구조체에 대한 포인터를 반환
   assert(t != NULL);
-#ifdef SENTINEL
-  assert(t->nil != NULL);
-  assert(t->root == t->nil);
-#else
-  assert(t->root == NULL);
-#endif
-  delete_rbtree(t);
+  // NULL이 아닌 유효한 트리 포인터를 반환했는지 확인. NULL이면 프로그램이 멈춤 
+#ifdef SENTINEL 
+  // sentinel이라는 메크로가 정의됐는지 확인.
+  assert(t->nil != NULL); 
+  //nil 포인터가 NULL이 아닌지 확인
+  assert(t->root == t->nil); 
+  // 루트 노드가 nil을 가리키는지, 이건 비어있다는 뜻
+#else 
+  assert(t->root == NULL); // 루트노드가 NULL상태인지.
+#endif 
+  delete_rbtree(t); // 테스트가 끝나고 트리 삭제하고, 메모리 해제
 }
 
 // root node should have proper values and pointers
@@ -129,7 +135,7 @@ void test_minmax(key_t *arr, const size_t n) {
 
 void test_to_array(rbtree *t, const key_t *arr, const size_t n) {
   assert(t != NULL);
-
+  
   insert_arr(t, arr, n);
   qsort((void *)arr, n, sizeof(key_t), comp);
 
@@ -368,16 +374,16 @@ void test_find_erase_rand(const size_t n, const unsigned int seed) {
 }
 
 int main(void) {
-  test_init();
-  test_insert_single(1024);
-  test_find_single(512, 1024);
-  test_erase_root(128);
-  test_find_erase_fixed();
-  test_minmax_suite();
-  test_to_array_suite();
-  test_distinct_values();
-  test_duplicate_values();
-  test_multi_instance();
-  test_find_erase_rand(10000, 17);
+  test_init(); // 트리 처음 만들 때 트리의 루트가 nil로 설정되는지, 비어있는 상태에서 시작되는지 확인.
+  test_insert_single(1024); // 단일 값이 정확히 삽입되는지.
+  test_find_single(512, 1024); // 특정 값을 찾는 과정을 검사, 없는 값은 NULL
+  test_erase_root(128); // 루트노드를 삭제하는 과정 검사, 루트는 트리 전체의 구조에 영향을 줄 수 있기 때문에 매우 중요함.
+  test_find_erase_fixed(); // 정해진 여러 값을 트리에 삽입한 후, 특정 값을 찾고 삭제하는 과정 확인.
+  test_minmax_suite(); // 트리에서 최솟값, 최댓값 찾는 테스트
+  test_to_array_suite(); // 트리에 저장된 값들을 배열로 변환하는 기능. 일반적으로 중위 순회를 사용하여 정렬된 배열을 얻는다.
+  test_distinct_values(); // 여러값을 삽입해도 올바르게 작동하는지, 균형을 유지하는지 확인.
+  test_duplicate_values(); // 중복된 값을 삽입했을 때 제대로 유지되는지 체크
+  test_multi_instance(); // 여러 트리 인스턴스가 동시에 작동할 때, 각 트리가 독립적으로 서로 간섭하지 않고 잘 동작하는지 확인. 
+  test_find_erase_rand(10000, 17); // 랜덤하게 생성된 값들을 트리에 삽입하고 값을 찾고 삭제하는 과정을 테스트함.
   printf("Passed all tests!\n");
 }
